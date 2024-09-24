@@ -15,11 +15,11 @@ A React hook for managing smart accounts on Differeent Chains using Privy, Jiffy
 To install the SDK, use npm or yarn:
 
 ```bash
-npm install jiffyscan-sdk
+npm install jiffy-hooks
 ```
 
 or
 
 ```bash
-yarn install jiffyscan-sdk
+yarn install jiffy-hooks
 ```
