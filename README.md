@@ -23,3 +23,42 @@ or
 ```bash
 yarn install jiffy-hooks
 ```
+
+
+## Usage
+
+```bash
+// ExampleComponent.tsx
+import React from 'react';
+import { useSmartAccount } from '../src/hooks/useSmartAccount';
+
+const ExampleComponent: React.FC = () => {
+  const {
+    isConnected,
+    smartAccountClient,
+    handleChainChange,
+    selectedChain,
+    fetchUserOperationHash,
+  } = useSmartAccount();
+
+  return (
+    <div>
+      {isConnected ? (
+        <div>
+          <h1>Connected to {selectedChain.name}</h1>
+          {/* Chain selection logic */}
+          <select onChange={handleChainChange}>
+            {/* Options here */}
+          </select>
+          {/* Use smartAccountClient or fetchUserOperationHash as needed */}
+        </div>
+      ) : (
+        <h1>Please connect your wallet</h1>
+      )}
+    </div>
+  );
+};
+
+export default ExampleComponent;
+
+```
