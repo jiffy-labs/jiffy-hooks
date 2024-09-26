@@ -8,8 +8,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm  --dts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["Smart Account"],
+  "author": "Ojas Palorkar",
   "license": "ISC",
   "files": [
     "dist"
