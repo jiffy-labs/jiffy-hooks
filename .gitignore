@@ -1,3 +1,5 @@
+tsconfig.tsbuildinfo
+.eslintignore
 # Node.js modules
 node_modules/
 package-lock.json
@@ -17,6 +19,7 @@ Thumbs.db
 
 # Build output
 dist/
+tests/
 
 # Optional lock files
 *.lock

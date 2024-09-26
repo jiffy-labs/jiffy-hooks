@@ -1,5 +1,3 @@
-// src/hooks/useSmartAccount.ts
-
 import { useState, useEffect, useMemo } from "react";
 import { JiffyPaymaster } from "@jiffy-labs/web3a";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
@@ -13,7 +11,7 @@ import {
 import { signerToSimpleSmartAccount } from "permissionless/accounts";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { ENTRYPOINT_ADDRESS_V06_TYPE } from "permissionless/types";
-import {  base, optimism, polygon } from "viem/chains";
+import { base, optimism, polygon } from "viem/chains";
 import {
   http,
   useAccount,
@@ -42,7 +40,6 @@ const openCompusChain = defineChain({
 
 // Define environment variables
 const jiffyscanKey = process.env.NEXT_PUBLIC_JIFFYSCAN_API_KEY as string;
-// const bundlerUrl = process.env.NEXT_PUBLIC_BUNDLER_URL as string;
 
 // Define the chains with their respective entry points and RPC URLs
 export const CHAINS = [
@@ -54,22 +51,10 @@ export const CHAINS = [
   },
   {
     name: "Open Campus Codex",
-    chain: openCompusChain, // Change from fuse to base mainnet
+    chain: openCompusChain,
     bundlerUrl: process.env.NEXT_PUBLIC_BUNDLER_URL_EDU_CHAIN!,
-    explorerUrl: "https://opencampus-codex.blockscout.com/", // Base Mainnet explorer URL
-},
-  {
-    name: "Optimism",
-    chain: optimism,
-    bundlerUrl: process.env.NEXT_PUBLIC_BUNDLER_URL_OPTIMISM!,
-    explorerUrl: "https://optimistic.etherscan.io/",
-  },
-  {
-    name: "Polygon",
-    chain: polygon,
-    bundlerUrl: process.env.NEXT_PUBLIC_BUNDLER_URL_POLYGON!,
-    explorerUrl: "https://polygonscan.com/",
-  },
+    explorerUrl: "https://opencampus-codex.blockscout.com/",
+  }
 ];
 
 // Define the type for the chain
@@ -85,10 +70,9 @@ export interface SmartAccountHook {
   isConnected: boolean;
   smartAccountClient: SmartAccountClient<ENTRYPOINT_ADDRESS_V06_TYPE> | null;
   handleChainChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  selectedChain: Chain;
+  selectedChain: Chain | undefined;
   fetchUserOperationHash: (txHash: string) => Promise<string>;
 }
-
 
 export function useSmartAccount(): SmartAccountHook {
   const [smartAccountClient, setSmartAccountClient] = useState<
@@ -99,7 +83,7 @@ export function useSmartAccount(): SmartAccountHook {
   const { isConnected } = useAccount();
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
-  const [selectedChain, setSelectedChain] = useState(CHAINS[0]);
+  const [selectedChain, setSelectedChain] = useState(CHAINS[0]); // Ensure a valid initial value
   const embeddedWallet = useMemo(
     () => wallets.find((wallet) => wallet.walletClientType === "privy"),
     [wallets]
@@ -116,7 +100,7 @@ export function useSmartAccount(): SmartAccountHook {
   // Initialize the SmartAccountClient when dependencies change
   useEffect(() => {
     (async () => {
-      if (isConnected && walletClient && publicClient) {
+      if (isConnected && walletClient && publicClient && selectedChain) {
         try {
           const customSigner = walletClientToSmartAccountSigner(walletClient);
           const bundlerTransport = http(selectedChain.bundlerUrl, {
@@ -170,10 +154,8 @@ export function useSmartAccount(): SmartAccountHook {
   // Handle chain selection change
   const handleChainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedChainId = parseInt(e.target.value, 10);
-    const selected = CHAINS.find((chain) => chain.chain.id === selectedChainId);
-    if (selected) {
-      setSelectedChain(selected);
-    }
+    const selected = CHAINS.find((chain) => chain.chain.id === selectedChainId) || CHAINS[0]; // Fallback to default chain
+    setSelectedChain(selected);
   };
 
   // Fetch user operation hash with retry logic
@@ -185,7 +167,7 @@ export function useSmartAccount(): SmartAccountHook {
     while (retries < 20) {
       try {
         const res = await fetch(
-          `https://api.jiffyscan.xyz/v0/getBundleActivity?bundle=${txHash}&network=${selectedChain.chain.name}&first=10&skip=0`,
+          `https://api.jiffyscan.xyz/v0/getBundleActivity?bundle=${txHash}&network=${selectedChain?.chain.name}&first=10&skip=0`,
           {
             headers: {
               "x-api-key": jiffyscanKey,
