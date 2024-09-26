@@ -1,5 +1,5 @@
 {
-  "name": "@jiffylabs/jiffy-hooks",
+  "name": "@jiffy-labs/jiffy-hooks",
   "version": "0.0.1",
   "main": "dist/index.js",
   "module": "dist/index.m.js",
